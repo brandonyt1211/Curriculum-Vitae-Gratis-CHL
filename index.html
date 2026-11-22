@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CV Libre v0.3 — Estudio de Currículum Gratis</title>
+  <title>CV Libre v0.9 — Estudio de Currículum Gratis</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#2563eb" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --bg: #070b14;
@@ -78,6 +77,18 @@
       align-items: center;
     }
 
+    .file-warning {
+      display: none;
+      margin: 8px 16px 0;
+      padding: 10px 13px;
+      border-radius: 12px;
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fde68a;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
     select, input, textarea {
       width: 100%;
       background: var(--surface);
@@ -90,13 +101,32 @@
       transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
 
+    input[type="color"] {
+      width: 54px;
+      height: 40px;
+      padding: 3px;
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--surface-2);
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+      -webkit-text-fill-color: #f8fafc;
+      -webkit-box-shadow: 0 0 0px 1000px #141e33 inset;
+      transition: background-color 5000s ease-in-out 0s;
+      animation-name: onAutoFillStart;
+    }
+
+    @keyframes onAutoFillStart { from {} to {} }
+
     input:focus, textarea:focus, select:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px var(--primary-glow);
       background: #141e33;
     }
 
-    /* Pestañas principales (4 secciones) */
     .tabs-wrap {
       padding: 10px 16px 6px;
       position: sticky;
@@ -136,7 +166,7 @@
     }
     .tab-btn.active { color: #fff; }
 
-    .container { padding: 8px 16px 24px; }
+    .container { padding: 8px 16px 24px; max-width: 980px; margin: 0 auto; }
     .panel { display: none; animation: fadeSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
     .panel.active { display: block; }
 
@@ -151,7 +181,7 @@
 
     .card-head {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px; gap: 8px;
+      margin-bottom: 12px; gap: 8px; flex-wrap: wrap;
     }
     .card-title { font-size: 0.92rem; font-weight: 700; margin: 0; color: #f1f5f9; }
 
@@ -160,7 +190,30 @@
     label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (max-width: 430px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 520px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 7px;
+    }
+    .chip-btn {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+    }
+    .chip-btn:hover {
+      background: var(--surface-3);
+      color: #fff;
+      border-color: var(--primary);
+    }
 
     .photo-row { display: flex; align-items: center; gap: 12px; }
     .avatar {
@@ -200,15 +253,33 @@
     .btn-xs { padding: 5px 8px; font-size: 0.74rem; border-radius: 8px; }
     .btn-danger { background: rgba(239, 68, 68, 0.16); color: #fca5a5; }
 
-    /* Selector de colores */
-    .swatches { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+    /* Paleta + Color Personalizado */
+    .color-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .swatches { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
     .swatch {
-      width: 34px; height: 34px; border-radius: 50%; border: 3px solid transparent;
+      width: 30px; height: 30px; border-radius: 50%; border: 3px solid transparent;
       cursor: pointer; transition: transform 0.2s, border-color 0.2s;
     }
     .swatch.active { transform: scale(1.15); border-color: #ffffff; box-shadow: 0 0 0 2px var(--primary); }
+    .custom-color-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-2);
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .custom-color-box span { font-size: 0.78rem; color: #e2e8f0; font-weight: 600; }
 
-    /* Diagnóstico IA */
+    /* Diagnóstico y Panel de Ayuda IA */
     .score-pill {
       display: inline-block; padding: 4px 10px; border-radius: 999px;
       font-size: 0.78rem; font-weight: 800; background: rgba(16, 185, 129, 0.18); color: #6ee7b7;
@@ -218,7 +289,38 @@
       padding: 9px 12px; border-radius: 8px; font-size: 0.83rem; margin-bottom: 8px; color: #e2e8f0;
     }
 
-    /* Barra inferior */
+    .ai-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .ai-pill-btn {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ai-pill-btn.active {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .ai-suggestion-box {
+      background: var(--surface-2);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: 13px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+    .ai-context-note { font-size: 0.74rem; color: #93c5fd; margin: 0 0 6px; font-weight: 600; }
+    .ai-suggestion-text {
+      font-size: 0.85rem; line-height: 1.48; color: #f1f5f9;
+      margin: 0 0 10px; white-space: pre-line;
+    }
+    .ai-suggestion-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
     .bottom-bar {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
       background: rgba(11, 16, 29, 0.94); backdrop-filter: blur(14px);
@@ -235,19 +337,25 @@
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ÁREA DEL CV (5 PLANTILLAS) */
-    .preview-box { background: #cbd5e1; padding: 10px; border-radius: 14px; overflow-x: auto; }
-    #cv-doc {
-      background: #ffffff; color: #0f172a;
-      width: 100%; max-width: 794px; min-height: 640px;
-      margin: 0 auto; padding: 30px; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
-      transition: all 0.25s ease;
+    /* ÁREA DEL CV (5 PLANTILLAS VERTICALES) */
+    .preview-box { background: #cbd5e1; padding: 12px; border-radius: 14px; overflow-x: auto; }
+    .cv-sheet {
+      background: #ffffff;
+      color: #0f172a;
+      width: 100%;
+      max-width: 794px;
+      margin: 0 auto;
+      padding: 28px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
-    .cv-photo { width: 82px; height: 82px; border-radius: 50%; object-fit: cover; border: 2px solid var(--cv-color); }
-    .cv-entry { margin-bottom: 10px; }
+
+    .cv-photo { width: 82px; height: 82px; border-radius: 50%; object-fit: cover; border: 2px solid var(--cv-color); flex-shrink: 0; }
+    .cv-entry { margin-bottom: 10px; break-inside: avoid; page-break-inside: avoid; }
     .cv-entry-top { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem; gap: 8px; }
     .cv-entry-sub { font-size: 0.82rem; color: #475569; margin-bottom: 2px; }
-    .cv-entry-desc { font-size: 0.86rem; margin: 0; line-height: 1.42; color: #1e293b; }
+    .cv-entry-desc { font-size: 0.86rem; margin: 0; line-height: 1.45; color: #1e293b; }
     .cv-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
     .cv-tag {
       background: var(--cv-color-soft); color: var(--cv-color);
@@ -269,17 +377,17 @@
     }
 
     /* 2. Moderna Sidebar */
-    .tpl-moderna { display: grid; grid-template-columns: 235px 1fr; padding: 0 !important; }
+    .tpl-moderna { display: grid; grid-template-columns: 225px 1fr; padding: 0 !important; }
     .tpl-moderna .cv-side { background: var(--cv-color); color: #fff; padding: 24px 18px; }
     .tpl-moderna .cv-side .cv-photo { border-color: rgba(255,255,255,0.7); }
     .tpl-moderna .cv-side h2 { font-size: 1.25rem; margin: 10px 0 3px; }
-    .tpl-moderna .cv-side .cv-role { font-size: 0.85rem; opacity: 0.9; margin-bottom: 12px; font-weight: 600; }
-    .tpl-moderna .cv-side p, .tpl-moderna .cv-side li { font-size: 0.8rem; opacity: 0.92; line-height: 1.4; }
+    .tpl-moderna .cv-side .cv-role { font-size: 0.85rem; opacity: 0.92; margin-bottom: 12px; font-weight: 600; }
+    .tpl-moderna .cv-side p, .tpl-moderna .cv-side li { font-size: 0.8rem; opacity: 0.95; line-height: 1.4; }
     .tpl-moderna .cv-side h3 {
       font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.3);
       padding-bottom: 3px; margin: 16px 0 6px;
     }
-    .tpl-moderna .cv-main { padding: 24px; }
+    .tpl-moderna .cv-main { padding: 24px; min-width: 0; }
     .tpl-moderna .cv-main h3 {
       font-size: 0.92rem; text-transform: uppercase; color: var(--cv-color);
       border-bottom: 2px solid #e2e8f0; padding-bottom: 3px; margin: 14px 0 7px;
@@ -314,6 +422,52 @@
     .tpl-minimal .cv-meta { font-size: 0.8rem; color: #64748b; }
     .tpl-minimal h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.4px; color: #64748b; margin: 15px 0 6px; }
 
+    /* IMPRESIÓN / GUARDAR COMO PDF VERTICAL SIN CORTES */
+    @page {
+      size: A4 portrait;
+      margin: 10mm;
+    }
+
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      header, .top-bar, .file-warning, .tabs-wrap, .bottom-bar, .toast, #panel-3 .card {
+        display: none !important;
+      }
+      .container {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      #panel-0, #panel-1, #panel-2 {
+        display: none !important;
+      }
+      #panel-3 {
+        display: block !important;
+        animation: none !important;
+      }
+      .preview-box {
+        background: #ffffff !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        overflow: visible !important;
+      }
+      .cv-sheet {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 12px !important;
+      }
+    }
+
     @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
@@ -325,8 +479,8 @@
     <div class="brand">
       <div class="logo">CV+</div>
       <div>
-        <h1>CV Libre v0.3</h1>
-        <small>100% Gratis · Sin límites · Offline</small>
+        <h1>CV Libre v0.9</h1>
+        <small>100% Gratis · Color Libre · PDF Vertical</small>
       </div>
     </div>
     <div class="header-actions">
@@ -334,6 +488,10 @@
       <button class="btn btn-primary btn-xs" onclick="nuevoPerfil()">+ Perfil</button>
     </div>
   </header>
+
+  <div class="file-warning" id="fileWarning">
+    Estás abriendo este archivo directo desde tu disco (<code>file://</code>). En ese modo, Chrome cierra el cuadro negro de autocompletado sin pegar los datos por seguridad. Ábrelo desde <strong>GitHub Pages (https://)</strong> o <strong>Live Server (http://localhost)</strong> para que Chrome rellene nombre, correo, teléfono y ciudad automáticamente.
+  </div>
 
   <div class="top-bar">
     <select id="perfilSelect" onchange="cargarPerfil()"></select>
@@ -352,64 +510,77 @@
 
   <div class="container">
 
-    <!-- TAB 0: DATOS PERSONALES SEPARADOS -->
+    <!-- TAB 0: FORMULARIO DE DATOS SEPARADOS + RELLENO RÁPIDO -->
     <section class="panel active" id="panel-0">
-      <div class="card">
-        <div class="card-head"><h2 class="card-title">Identidad y Foto</h2></div>
-        <div class="photo-row field">
-          <div class="avatar" id="avatarBox">
-            <span style="font-size:0.7rem;color:#94a3b8;text-align:center;">Sin<br>foto</span>
+      <form id="formDatosPersonales" action="#" method="post" autocomplete="on" onsubmit="return false;">
+        <div class="card">
+          <div class="card-head"><h2 class="card-title">Identidad y Foto</h2></div>
+          <div class="photo-row field">
+            <div class="avatar" id="avatarBox">
+              <span style="font-size:0.7rem;color:#94a3b8;text-align:center;">Sin<br>foto</span>
+            </div>
+            <div style="flex:1;">
+              <label>Foto de perfil (opcional)</label>
+              <input type="file" accept="image/*" onchange="subirFoto(event)" style="padding:7px;font-size:0.8rem;" />
+              <button type="button" class="btn btn-soft btn-xs" style="margin-top:6px;" onclick="quitarFoto()">Quitar foto</button>
+            </div>
           </div>
-          <div style="flex:1;">
-            <label>Foto de perfil (opcional)</label>
-            <input type="file" accept="image/*" onchange="subirFoto(event)" style="padding:7px;font-size:0.8rem;" />
-            <button class="btn btn-soft btn-xs" style="margin-top:6px;" onclick="quitarFoto()">Quitar foto</button>
+
+          <div class="field">
+            <label for="nombre">Nombre completo</label>
+            <input id="nombre" name="name" type="text" autocomplete="name" placeholder="Escribe o elige tu perfil de Chrome" />
+          </div>
+          <div class="field">
+            <label for="cargo">Cargo o título objetivo</label>
+            <input id="cargo" name="organization-title" type="text" autocomplete="organization-title" placeholder="Escribe o toca un cargo rápido abajo" />
+            <div class="quick-chips">
+              <button type="button" class="chip-btn" onclick="setCampoRapido('cargo', 'Soporte Técnico / TI')">+ Soporte TI</button>
+              <button type="button" class="chip-btn" onclick="setCampoRapido('cargo', 'Desarrollador / Analista')">+ Desarrollo / Datos</button>
+              <button type="button" class="chip-btn" onclick="setCampoRapido('cargo', 'Asistente Administrativo')">+ Administración</button>
+              <button type="button" class="chip-btn" onclick="setCampoRapido('cargo', 'Atención al Cliente / Ventas')">+ Ventas / Atención</button>
+              <button type="button" class="chip-btn" onclick="setCampoRapido('cargo', 'Operador / Técnico en Terreno')">+ Técnico / Terreno</button>
+            </div>
           </div>
         </div>
 
-        <div class="field">
-          <label>Nombre completo</label>
-          <input id="nombre" placeholder="Ej. Brandon Kenji" oninput="guardar()" />
+        <div class="card">
+          <div class="card-head"><h2 class="card-title">Contacto (Campos separados)</h2></div>
+          <div class="grid-2 field">
+            <div>
+              <label for="telefono">Teléfono / WhatsApp</label>
+              <input id="telefono" name="tel" type="tel" autocomplete="tel" placeholder="Número de contacto" />
+            </div>
+            <div>
+              <label for="correo">Correo electrónico</label>
+              <input id="correo" name="email" type="email" autocomplete="email" placeholder="Correo de contacto" />
+            </div>
+          </div>
+          <div class="grid-2 field" style="margin-top:10px;">
+            <div>
+              <label for="ciudad">Ciudad / Ubicación</label>
+              <input id="ciudad" name="address-level2" type="text" autocomplete="address-level2" placeholder="Ciudad o localidad" />
+            </div>
+            <div>
+              <label for="web">Enlace / Portafolio / Perfil</label>
+              <input id="web" name="url" type="url" autocomplete="url" placeholder="Portafolio, LinkedIn o enlace" />
+            </div>
+          </div>
         </div>
-        <div class="field">
-          <label>Cargo o título objetivo</label>
-          <input id="cargo" placeholder="Ej. Técnico en Telemetría / Soporte TI / Operador" oninput="guardar()" />
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="card-head"><h2 class="card-title">Contacto (Campos separados)</h2></div>
-        <div class="grid-2 field">
-          <div>
-            <label>Teléfono / WhatsApp</label>
-            <input id="telefono" type="tel" placeholder="+56 9 1234 5678" oninput="guardar()" />
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title">Resumen / Perfil Profesional</h2>
+            <button type="button" class="btn btn-ai btn-xs" onclick="iaMejorarResumen()">✨ IA Según CV</button>
           </div>
-          <div>
-            <label>Correo electrónico</label>
-            <input id="correo" type="email" placeholder="correo@ejemplo.com" oninput="guardar()" />
-          </div>
-        </div>
-        <div class="grid-2 field" style="margin-top:10px;">
-          <div>
-            <label>Ciudad / Región</label>
-            <input id="ciudad" placeholder="Ej. Calama, Chile" oninput="guardar()" />
-          </div>
-          <div>
-            <label>LinkedIn / Portafolio / GitHub</label>
-            <input id="web" placeholder="linkedin.com/in/tuperfil" oninput="guardar()" />
+          <div class="field">
+            <textarea id="resumen" name="summary" rows="4" placeholder="Escribe tu resumen o usa un botón rápido / IA Según CV..."></textarea>
+            <div class="quick-chips">
+              <button type="button" class="chip-btn" onclick="agregarFraseRapida('resumen', 'Enfoque práctico, orden y resolución rápida de problemas.')">+ Enfoque resolutivo</button>
+              <button type="button" class="chip-btn" onclick="agregarFraseRapida('resumen', 'Disponibilidad para trabajar en equipo y adaptarme a nuevos procesos.')">+ Trabajo en equipo</button>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h2 class="card-title">Resumen / Perfil Profesional</h2>
-          <button class="btn btn-ai btn-xs" onclick="iaMejorarResumen()">✨ Mejorar con IA</button>
-        </div>
-        <div class="field">
-          <textarea id="resumen" rows="4" placeholder="Escribe tu resumen profesional o usa 'Mejorar con IA'..." oninput="guardar()"></textarea>
-        </div>
-      </div>
+      </form>
     </section>
 
     <!-- TAB 1: TRAYECTORIA, EDUCACIÓN, IDIOMAS Y HABILIDADES -->
@@ -418,7 +589,7 @@
         <div class="card-head">
           <h2 class="card-title">Experiencia Laboral</h2>
           <div style="display:flex;gap:6px;">
-            <button class="btn btn-ai btn-xs" onclick="iaPulirExperiencias()">✨ Pulir logros</button>
+            <button class="btn btn-ai btn-xs" onclick="iaPulirExperiencias()">✨ Logros Según CV</button>
             <button class="btn btn-primary btn-xs" onclick="addExp()">+ Cargo</button>
           </div>
         </div>
@@ -436,57 +607,88 @@
       <div class="card">
         <div class="card-head">
           <h2 class="card-title">Habilidades e Idiomas</h2>
-          <button class="btn btn-ai btn-xs" onclick="iaSugerirSkills()">✨ Sugerir</button>
+          <button class="btn btn-ai btn-xs" onclick="iaSugerirSkills()">✨ Skills Según CV</button>
         </div>
         <div class="field">
           <label>Habilidades técnicas y blandas (separadas por coma)</label>
-          <input id="habilidades" placeholder="Ej. Excel, Soporte Técnico, Redes, Trabajo en equipo" oninput="guardar()" />
+          <input id="habilidades" placeholder="Escribe o toca habilidades rápidas abajo" />
+          <div class="quick-chips">
+            <button type="button" class="chip-btn" onclick="agregarSkillRapida('Excel / Planillas')">+ Excel</button>
+            <button type="button" class="chip-btn" onclick="agregarSkillRapida('Soporte Técnico')">+ Soporte Técnico</button>
+            <button type="button" class="chip-btn" onclick="agregarSkillRapida('Redes y Conectividad')">+ Redes</button>
+            <button type="button" class="chip-btn" onclick="agregarSkillRapida('Atención al Cliente')">+ Atención al Cliente</button>
+            <button type="button" class="chip-btn" onclick="agregarSkillRapida('Organización y Documentación')">+ Documentación</button>
+          </div>
         </div>
-        <div class="field" style="margin-top:10px;">
+        <div class="field" style="margin-top:12px;">
           <label>Idiomas y nivel (separados por coma)</label>
-          <input id="idiomas" placeholder="Ej. Español Nativo, Inglés Intermedio (B1)" oninput="guardar()" />
+          <input id="idiomas" placeholder="Idiomas y nivel separados por coma" />
+          <div class="quick-chips">
+            <button type="button" class="chip-btn" onclick="agregarSkillRapida('Español Nativo', 'idiomas')">+ Español Nativo</button>
+            <button type="button" class="chip-btn" onclick="agregarSkillRapida('Inglés Básico', 'idiomas')">+ Inglés Básico</button>
+            <button type="button" class="chip-btn" onclick="agregarSkillRapida('Inglés Intermedio', 'idiomas')">+ Inglés Intermedio</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- TAB 2: CARGAR CV EXISTENTE + ASISTENTE IA -->
+    <!-- TAB 2: PANEL DE AYUDA IA + CARGA + DIAGNÓSTICO -->
     <section class="panel" id="panel-2">
       <div class="card">
-        <div class="card-head"><h2 class="card-title">Cargar o Importar Currículum para Editar</h2></div>
+        <div class="card-head">
+          <h2 class="card-title">Panel de Ayuda con IA (Basado en Tu CV)</h2>
+          <span class="score-pill" id="aiTopicBadge">Habilidades</span>
+        </div>
         <p style="font-size:0.82rem;color:var(--muted);margin:0 0 10px;">
-          Carga un archivo <strong>.JSON</strong> de respaldo de esta app o pega el <strong>texto de tu CV actual</strong> (copiado de un PDF, Word o LinkedIn) para separarlo en campos editables.
+          Genera sugerencias enfocadas en el cargo, experiencia, estudios y habilidades que ya ingresaste en tu currículum.
         </p>
 
-        <div class="field">
-          <label>1. Cargar archivo .JSON de CV</label>
-          <input type="file" accept=".json,application/json" onchange="cargarArchivoJSON(event)" style="padding:7px;font-size:0.8rem;" />
+        <div class="ai-pills" id="aiCategoryPills">
+          <button class="ai-pill-btn active" onclick="setAiCategory('skills', this)">Habilidades</button>
+          <button class="ai-pill-btn" onclick="setAiCategory('resumen', this)">Resumen</button>
+          <button class="ai-pill-btn" onclick="setAiCategory('logros', this)">Logros</button>
+          <button class="ai-pill-btn" onclick="setAiCategory('idiomas', this)">Idiomas</button>
+          <button class="ai-pill-btn" onclick="setAiCategory('consejos', this)">Tips Según CV</button>
         </div>
 
-        <div class="field" style="margin-top:12px;">
-          <label>2. Pegar texto de un CV existente y auto-rellenar campos</label>
-          <textarea id="textoImportar" rows="5" placeholder="Pega aquí el texto de tu currículum antiguo (nombre, correo, teléfono, cargos, estudios, habilidades)..."></textarea>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-          <button class="btn btn-success" style="flex:1;" onclick="importarDesdeTexto()">Extraer y Rellenar Campos</button>
-          <button class="btn btn-soft" onclick="cargarEjemploDemo()">Cargar Ejemplo Demo</button>
+        <button class="btn btn-ai" style="width:100%;" onclick="generarAyudaIA()">✨ Generar Sugerencia Para Mi CV</button>
+
+        <div class="ai-suggestion-box">
+          <p class="ai-context-note" id="aiContextNote">Analizando contexto actual de tu CV...</p>
+          <p class="ai-suggestion-text" id="aiSuggestionText">Pulsa "Generar Sugerencia Para Mi CV" para ver una propuesta alineada a lo que ya escribiste.</p>
+          <div class="ai-suggestion-actions">
+            <button class="btn btn-success btn-xs" onclick="aplicarSugerenciaPanel()">Aplicar al CV</button>
+            <button class="btn btn-soft btn-xs" onclick="copiarSugerenciaPanel()">Copiar</button>
+          </div>
         </div>
       </div>
 
       <div class="card">
         <div class="card-head">
-          <h2 class="card-title">Asistente de Mejora ("IA" Gratis)</h2>
+          <h2 class="card-title">Revisión Rápida del CV</h2>
           <span class="score-pill" id="cvScore">Puntaje CV: 0%</span>
         </div>
-        <p style="font-size:0.82rem;color:var(--muted);margin:0 0 10px;">
-          Analiza tu CV al instante, mejora redacción sin costo y genera un prompt listo para cualquier chat de IA si quieres una reescritura profunda.
-        </p>
-
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-          <button class="btn btn-ai" style="flex:1;" onclick="analizarCV()">Analizar y Optimizar Todo</button>
+          <button class="btn btn-ai" style="flex:1;" onclick="analizarCV()">Evaluar Completitud</button>
           <button class="btn btn-soft" onclick="copiarPromptIA()">Copiar Prompt IA</button>
         </div>
-
         <div id="iaConsejos"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2 class="card-title">Cargar o Importar Currículum</h2></div>
+        <div class="field">
+          <label>1. Cargar archivo .JSON de respaldo</label>
+          <input type="file" accept=".json,application/json" onchange="cargarArchivoJSON(event)" style="padding:7px;font-size:0.8rem;" />
+        </div>
+        <div class="field" style="margin-top:12px;">
+          <label>2. Pegar texto plano de un CV y extraer campos</label>
+          <textarea id="textoImportar" rows="4" placeholder="Pega texto de un currículum para extraer correo, teléfono, enlace o líneas de experiencia..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button class="btn btn-success" style="flex:1;" onclick="importarDesdeTexto()">Extraer y Rellenar</button>
+          <button class="btn btn-soft" onclick="cargarEjemploDemo()">Limpiar / Base Vacía</button>
+        </div>
       </div>
     </section>
 
@@ -502,12 +704,18 @@
           <option value="tpl-minimal">5. Minimalista Editorial (Limpia y moderna)</option>
         </select>
 
-        <label style="margin-top:12px;">Color principal del diseño</label>
-        <div class="swatches" id="swatches"></div>
+        <label style="margin-top:12px;">Paleta rápida o color personalizado</label>
+        <div class="color-controls">
+          <div class="swatches" id="swatches"></div>
+          <div class="custom-color-box">
+            <input type="color" id="colorPersonalizado" value="#1e3a8a" oninput="elegirColor(this.value)" onchange="elegirColor(this.value)" title="Elegir color personalizado" />
+            <span>Color libre</span>
+          </div>
+        </div>
       </div>
 
       <div class="preview-box">
-        <div id="cv-doc" class="tpl-clasica"></div>
+        <div id="cv-doc" class="cv-sheet tpl-clasica"></div>
       </div>
     </section>
 
@@ -515,21 +723,228 @@
 
   <div class="bottom-bar">
     <button class="btn btn-soft" style="flex:1;" onclick="irTab(3, document.querySelectorAll('.tab-btn')[3])">Vista Previa</button>
-    <button class="btn btn-primary" style="flex:2;" onclick="descargarPDF()">Descargar PDF Gratis</button>
+    <button class="btn btn-primary" style="flex:2;" onclick="descargarPDF()">Guardar / Descargar PDF</button>
   </div>
 
   <div class="toast" id="toast">Listo</div>
 
   <script>
-    const STORAGE_KEY = 'cv_libre_v03_store';
+    const STORAGE_KEY = 'cv_libre_v09_store';
     const COLORES = [
-      { name: 'Azul Zafiro', hex: '#1e3a8a', soft: '#eff6ff' },
-      { name: 'Esmeralda', hex: '#065f46', soft: '#ecfdf5' },
-      { name: 'Burdeo', hex: '#881337', soft: '#fff1f2' },
-      { name: 'Pizarra', hex: '#1e293b', soft: '#f1f5f9' },
-      { name: 'Violeta', hex: '#5b21b6', soft: '#f5f3ff' },
-      { name: 'Ámbar Oscuro', hex: '#92400e', soft: '#fffbeb' }
+      { name: 'Azul Zafiro', hex: '#1e3a8a' },
+      { name: 'Esmeralda', hex: '#065f46' },
+      { name: 'Burdeo', hex: '#881337' },
+      { name: 'Pizarra', hex: '#1e293b' },
+      { name: 'Violeta', hex: '#5b21b6' },
+      { name: 'Ámbar Oscuro', hex: '#92400e' }
     ];
+
+    const LABELS_IA = {
+      skills: 'Habilidades',
+      resumen: 'Resumen',
+      logros: 'Logros',
+      idiomas: 'Idiomas',
+      consejos: 'Tips Según CV'
+    };
+
+    const RUBROS = [
+      {
+        id: 'tech',
+        nombre: 'Soporte / TI / Sistemas',
+        regex: /(soporte|ti|it|técnico|tecnico|redes|hardware|sistemas|telemetr|mantenimiento|mesa de ayuda)/i,
+        skills: ['Diagnóstico de fallas', 'Soporte a usuarios', 'Configuración y redes', 'Documentación técnica', 'Resolución de incidencias'],
+        logro: 'Resolví incidencias técnicas y operativas manteniendo la continuidad de los equipos y registrando soluciones claras.'
+      },
+      {
+        id: 'dev',
+        nombre: 'Desarrollo / Datos / Digital',
+        regex: /(program|desarroll|software|web|datos|analista|python|sql|excel|automat|sistema)/i,
+        skills: ['Automatización de tareas', 'Análisis y limpieza de datos', 'Control de versiones', 'Documentación de flujos', 'Resolución estructurada'],
+        logro: 'Automaticé procesos repetitivos y estructuré información clave para acelerar la revisión y toma de decisiones.'
+      },
+      {
+        id: 'comercial',
+        nombre: 'Atención / Ventas / Servicio',
+        regex: /(ventas|comercial|cliente|atención|atencion|servicio|recepción|recepcion|caja|mesón|meson)/i,
+        skills: ['Atención orientada al cliente', 'Comunicación asertiva', 'Seguimiento de consultas', 'Resolución de reclamos', 'Trabajo bajo presión'],
+        logro: 'Mejoré la respuesta a consultas y el seguimiento de requerimientos manteniendo un trato claro y resolutivo.'
+      },
+      {
+        id: 'admin',
+        nombre: 'Administración / Operaciones / Logística',
+        regex: /(admin|gestión|gestion|operac|logíst|logist|bodega|inventario|planilla|coordin|secretar)/i,
+        skills: ['Control de registros e inventario', 'Coordinación de tareas', 'Planificación de prioridades', 'Cumplimiento de plazos', 'Reportes operativos'],
+        logro: 'Ordené registros, cronogramas y controles operativos para reducir demoras y mantener la información al día.'
+      }
+    ];
+
+    let aiCategoriaActual = 'skills';
+    let ultimaSugerenciaIA = '';
+
+    if (window.location.protocol === 'file:') {
+      document.getElementById('fileWarning').style.display = 'block';
+    }
+
+    function calcularColorSuave(hex) {
+      const clean = (hex || '#1e3a8a').replace('#', '');
+      if (clean.length !== 6) return '#eff6ff';
+      const r = parseInt(clean.slice(0, 2), 16);
+      const g = parseInt(clean.slice(2, 4), 16);
+      const b = parseInt(clean.slice(4, 6), 16);
+      const mix = (c) => Math.round(c + (255 - c) * 0.9);
+      return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
+    }
+
+    function vincularAutocompletadoChrome() {
+      const ids = ['nombre', 'cargo', 'telefono', 'correo', 'ciudad', 'web', 'resumen', 'habilidades', 'idiomas'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        ['input', 'change', 'blur'].forEach(evt => {
+          el.addEventListener(evt, () => guardar(evt === 'change'));
+        });
+        el.addEventListener('animationstart', (e) => {
+          if (e.animationName === 'onAutoFillStart') {
+            setTimeout(() => guardar(true), 80);
+          }
+        });
+      });
+    }
+
+    function setCampoRapido(campoId, valor) {
+      const el = document.getElementById(campoId);
+      if (!el) return;
+      el.value = valor;
+      guardar();
+      toast('Campo actualizado');
+    }
+
+    function agregarFraseRapida(campoId, frase) {
+      const el = document.getElementById(campoId);
+      if (!el) return;
+      const actualTxt = el.value.trim();
+      el.value = actualTxt ? `${actualTxt.replace(/[.!?]+$/, '')}. ${frase}` : frase;
+      guardar();
+      toast('Frase agregada');
+    }
+
+    function agregarSkillRapida(item, campo = 'habilidades') {
+      const el = document.getElementById(campo);
+      if (!el) return;
+      const lista = el.value.split(',').map(s => s.trim()).filter(Boolean);
+      if (!lista.some(x => x.toLowerCase() === item.toLowerCase())) {
+        lista.push(item);
+      }
+      el.value = lista.join(', ');
+      guardar();
+      toast(`"${item}" añadido`);
+    }
+
+    function obtenerContextoCV(d) {
+      const cargosExp = (d.experiencias || []).map(e => e.puesto).filter(Boolean);
+      const detallesExp = (d.experiencias || []).map(e => e.detalle).filter(Boolean);
+      const estudiosTxt = (d.estudios || []).map(e => `${e.titulo || ''} ${e.institucion || ''}`).filter(s => s.trim());
+      const skillsActuales = (d.habilidades || '').split(',').map(s => s.trim()).filter(Boolean);
+      const cargoBase = (d.cargo || cargosExp[0] || '').trim();
+      const textoTotal = [cargoBase, ...cargosExp, ...detallesExp, ...estudiosTxt, ...skillsActuales, d.resumen || ''].join(' ');
+
+      const rubroDetectado = RUBROS.find(r => r.regex.test(textoTotal)) || {
+        id: 'general',
+        nombre: cargoBase || 'Perfil del CV',
+        skills: ['Comunicación efectiva', 'Organización de tareas', 'Trabajo en equipo', 'Adaptabilidad', 'Resolución de problemas'],
+        logro: 'Cumplí las responsabilidades asignadas con orden, seguimiento constante y enfoque en la calidad del resultado.'
+      };
+
+      return {
+        cargoBase,
+        cargosExp,
+        detallesExp,
+        estudiosTxt,
+        skillsActuales,
+        rubroDetectado
+      };
+    }
+
+    function generarSugerenciaContextual(categoria, d) {
+      const ctx = obtenerContextoCV(d);
+      const cargoLabel = ctx.cargoBase || 'tu rol objetivo';
+
+      if (categoria === 'skills') {
+        const disponibles = ctx.rubroDetectado.skills.filter(
+          sk => !ctx.skillsActuales.some(act => act.toLowerCase() === sk.toLowerCase())
+        );
+        const seleccion = (disponibles.length ? disponibles : ctx.rubroDetectado.skills).slice(0, 3);
+        return {
+          contexto: `Basado en tu enfoque (${ctx.rubroDetectado.nombre}) y habilidades actuales (${ctx.skillsActuales.length})`,
+          texto: seleccion.join(', ')
+        };
+      }
+
+      if (categoria === 'resumen') {
+        const apoyoSkills = ctx.skillsActuales.length
+          ? ` con experiencia o práctica en ${ctx.skillsActuales.slice(0, 3).join(', ')}`
+          : '';
+        const apoyoFormacion = ctx.estudiosTxt.length
+          ? `, respaldado por tu formación en ${ctx.estudiosTxt[0].trim()}`
+          : '';
+        return {
+          contexto: `Redacción enfocada en "${cargoLabel}" y tu perfil actual`,
+          texto: `Perfil orientado al área de ${cargoLabel}${apoyoSkills}${apoyoFormacion}. Enfocado en aportar orden, claridad en la ejecución y soluciones prácticas en cada etapa del trabajo.`
+        };
+      }
+
+      if (categoria === 'logros') {
+        const expConDetalle = (d.experiencias || []).find(e => (e.detalle || '').trim().length > 0);
+        const baseExp = expConDetalle ? expConDetalle.detalle.trim() : '';
+        const complemento = ctx.rubroDetectado.logro;
+        return {
+          contexto: `Alineado a ${ctx.cargosExp[0] || cargoLabel}`,
+          texto: baseExp
+            ? `${baseExp.replace(/[.!?]+$/, '')}. ${complemento}`
+            : complemento
+        };
+      }
+
+      if (categoria === 'idiomas') {
+        const actualIdiomas = (d.idiomas || '').trim();
+        if (!actualIdiomas) {
+          return {
+            contexto: 'Aún no registras idiomas en tu CV',
+            texto: 'Español (Nativo), Inglés (Básico / Lectura técnica)'
+          };
+        }
+        if (!/inglés|ingles|english/i.test(actualIdiomas)) {
+          return {
+            contexto: `Complementando tus idiomas actuales: ${actualIdiomas}`,
+            texto: `${actualIdiomas}, Inglés (Intermedio / Técnico)`
+          };
+        }
+        return {
+          contexto: `Refinando nivel de idiomas registrados: ${actualIdiomas}`,
+          texto: `${actualIdiomas} — aplicable a documentación, consultas y comunicación laboral`
+        };
+      }
+
+      const faltantes = [];
+      if (!d.nombre) faltantes.push('nombre');
+      if (!d.cargo) faltantes.push('cargo objetivo');
+      if (!(d.telefono || d.correo)) faltantes.push('contacto');
+      if (!d.resumen) faltantes.push('resumen');
+      if (!(d.experiencias || []).some(e => e.puesto || e.detalle)) faltantes.push('experiencia');
+      if (!(d.estudios || []).some(e => e.titulo || e.institucion)) faltantes.push('educación');
+      if (!ctx.skillsActuales.length) faltantes.push('habilidades');
+
+      if (faltantes.length) {
+        return {
+          contexto: 'Prioridades detectadas en tu CV actual',
+          texto: `Para fortalecer tu postulación a "${cargoLabel}", completa primero: ${faltantes.join(', ')}. Mantén descripciones concretas de lo que hiciste y cómo aportaste.`
+        };
+      }
+      return {
+        contexto: `Tu CV para "${cargoLabel}" ya tiene las secciones principales`,
+        texto: `Revisa que las palabras clave de "${cargoLabel}" y tus habilidades (${ctx.skillsActuales.slice(0, 3).join(', ')}) aparezcan en tu resumen y experiencia, y verifica la vista previa antes de exportar el PDF.`
+      };
+    }
 
     function nuevoCV() {
       return {
@@ -576,7 +991,10 @@
       document.getElementById('tabIndicator').style.transform = `translateX(${idx * 100}%)`;
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
       document.getElementById(`panel-${idx}`).classList.add('active');
-      if (idx === 2) analizarCV();
+      if (idx === 2) {
+        analizarCV();
+        generarAyudaIA(false);
+      }
       if (idx === 3) renderCV();
     }
 
@@ -584,11 +1002,13 @@
       const d = store[actual];
       const box = document.getElementById('swatches');
       box.innerHTML = COLORES.map(c => `
-        <button class="swatch ${d.color === c.hex ? 'active' : ''}"
+        <button type="button" class="swatch ${d.color.toLowerCase() === c.hex.toLowerCase() ? 'active' : ''}"
           style="background:${c.hex}"
           title="${c.name}"
           onclick="elegirColor('${c.hex}')"></button>
       `).join('');
+      const picker = document.getElementById('colorPersonalizado');
+      if (picker) picker.value = d.color || '#1e3a8a';
     }
 
     function elegirColor(hex) {
@@ -692,14 +1112,28 @@
               ${list.length > 1 ? `<button class="btn btn-danger btn-xs" onclick="delExp(${i})">✕</button>` : ''}
             </div>
           </div>
-          <div class="field"><input placeholder="Cargo o Puesto" value="${esc(x.puesto)}" oninput="updExp(${i},'puesto',this.value)" /></div>
+          <div class="field"><input placeholder="Cargo o Puesto" value="${esc(x.puesto)}" oninput="updExp(${i},'puesto',this.value)" onchange="updExp(${i},'puesto',this.value)" /></div>
           <div class="grid-2 field">
-            <input placeholder="Empresa" value="${esc(x.empresa)}" oninput="updExp(${i},'empresa',this.value)" />
-            <input placeholder="Periodo (ej. 2024 - 2026)" value="${esc(x.periodo)}" oninput="updExp(${i},'periodo',this.value)" />
+            <input placeholder="Organización o Área" value="${esc(x.empresa)}" oninput="updExp(${i},'empresa',this.value)" onchange="updExp(${i},'empresa',this.value)" />
+            <input placeholder="Periodo (ej. 2024 - Actual)" value="${esc(x.periodo)}" oninput="updExp(${i},'periodo',this.value)" onchange="updExp(${i},'periodo',this.value)" />
           </div>
-          <div class="field"><textarea rows="2" placeholder="Funciones, logros y herramientas utilizadas..." oninput="updExp(${i},'detalle',this.value)">${esc(x.detalle)}</textarea></div>
+          <div class="field">
+            <textarea rows="2" placeholder="Funciones, logros o tareas realizadas..." oninput="updExp(${i},'detalle',this.value)" onchange="updExp(${i},'detalle',this.value)">${esc(x.detalle)}</textarea>
+            <div class="quick-chips">
+              <button type="button" class="chip-btn" onclick="rellenarDetalleExp(${i}, 'Realicé seguimiento de tareas, registros diarios y soporte operativo continuo.')">+ Soporte y registros</button>
+              <button type="button" class="chip-btn" onclick="rellenarDetalleExp(${i}, 'Coordiné actividades y entregables en plazo cumpliendo estándares de calidad.')">+ Coordinación y calidad</button>
+            </div>
+          </div>
         </div>
       `).join('');
+    }
+
+    function rellenarDetalleExp(i, texto) {
+      const prev = (store[actual].experiencias[i].detalle || '').trim();
+      store[actual].experiencias[i].detalle = prev ? `${prev.replace(/[.!?]+$/, '')}. ${texto}` : texto;
+      guardar(false);
+      renderExp();
+      toast('Descripción añadida');
     }
 
     function addExp() { store[actual].experiencias.push({ puesto:'', empresa:'', periodo:'', detalle:'' }); guardar(false); renderExp(); }
@@ -719,10 +1153,10 @@
               ${list.length > 1 ? `<button class="btn btn-danger btn-xs" onclick="delEdu(${i})">✕</button>` : ''}
             </div>
           </div>
-          <div class="field"><input placeholder="Título, Carrera o Certificación" value="${esc(x.titulo)}" oninput="updEdu(${i},'titulo',this.value)" /></div>
+          <div class="field"><input placeholder="Título, Carrera o Curso" value="${esc(x.titulo)}" oninput="updEdu(${i},'titulo',this.value)" onchange="updEdu(${i},'titulo',this.value)" /></div>
           <div class="grid-2">
-            <input placeholder="Institución / Entidad" value="${esc(x.institucion)}" oninput="updEdu(${i},'institucion',this.value)" />
-            <input placeholder="Año / Periodo" value="${esc(x.periodo)}" oninput="updEdu(${i},'periodo',this.value)" />
+            <input placeholder="Institución / Centro" value="${esc(x.institucion)}" oninput="updEdu(${i},'institucion',this.value)" onchange="updEdu(${i},'institucion',this.value)" />
+            <input placeholder="Año / Periodo" value="${esc(x.periodo)}" oninput="updEdu(${i},'periodo',this.value)" onchange="updEdu(${i},'periodo',this.value)" />
           </div>
         </div>
       `).join('');
@@ -751,7 +1185,6 @@
       if (notificar) toast('Guardado automáticamente');
     }
 
-    /* CARGAR ARCHIVO JSON O IMPORTAR TEXTO DE CV */
     function exportarJSON() {
       const dataStr = JSON.stringify(store[actual], null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
@@ -809,7 +1242,7 @@
       if (posiblesExp.length) {
         d.experiencias = posiblesExp.slice(0, 5).map(l => ({
           puesto: l.slice(0, 65),
-          empresa: 'Extraído de texto',
+          empresa: 'Experiencia importada',
           periodo: (l.match(/\b(20\d\d(?:\s*[-–—a/]\s*(?:20\d\d|actual|hoy))?)\b/i) || [''])[0],
           detalle: l
         }));
@@ -826,90 +1259,105 @@
     }
 
     function cargarEjemploDemo() {
-      store[actual] = {
-        plantilla: 'tpl-moderna',
-        color: '#1e3a8a',
-        nombre: 'Brandon Kenji',
-        cargo: 'Técnico en Telemetría, Hardware y Soporte TI',
-        telefono: '+56 9 8765 4321',
-        correo: 'brandon.kenji@ejemplo.cl',
-        ciudad: 'Calama, Chile',
-        web: 'github.com/brandonkenji',
-        foto: '',
-        resumen: 'Técnico resolutivo con experiencia en configuración de equipos, soporte de hardware y redes, automatización de reportes y trabajo en entornos operativos exigentes.',
-        habilidades: 'Soporte Técnico, Ensamblaje PC, Redes, Excel Avanzado, Python, Resolución de Fallas',
-        idiomas: 'Español (Nativo), Inglés (Intermedio)',
-        experiencias: [
-          {
-            puesto: 'Técnico de Soporte y Telemetría',
-            empresa: 'Servicios Técnicos Operativos',
-            periodo: '2025 - 2026',
-            detalle: 'Configuración y diagnóstico de dispositivos operativos, documentación de reportes y resolución rápida de incidencias en terreno.'
-          },
-          {
-            puesto: 'Soporte Hardware y Mantenimiento',
-            empresa: 'Área Tecnológica',
-            periodo: '2024 - 2025',
-            detalle: 'Armado, optimización y mantenimiento preventivo de equipos, respaldo de datos y asistencia técnica a usuarios.'
-          }
-        ],
-        estudios: [
-          { titulo: 'Formación Técnica Superior', institucion: 'Centro de Estudios Técnicos', periodo: 'En curso' }
-        ]
-      };
+      store[actual] = nuevoCV();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
       cargarPerfil();
-      toast('Ejemplo cargado');
+      toast('Perfil reiniciado en blanco');
     }
 
-    /* MOTOR DE MEJORA "IA" LOCAL GRATUITA */
     function iaMejorarResumen() {
       const d = store[actual];
-      const cargo = (d.cargo || 'profesional del área').trim();
-      const skills = (d.habilidades || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 3);
-      const base = (d.resumen || '').trim();
-
-      const skillsTxt = skills.length ? ` con dominio en ${skills.join(', ')}` : '';
-      d.resumen = base
-        ? `${cargo.charAt(0).toUpperCase() + cargo.slice(1)} orientado a resultados${skillsTxt}. ${base.endsWith('.') ? base : base + '.'} Comprometido con la mejora continua, la precisión operativa y el trabajo en equipo.`
-        : `${cargo.charAt(0).toUpperCase() + cargo.slice(1)} proactivo y resolutivo${skillsTxt}, con enfoque en calidad, cumplimiento de estándares y rápida adaptación a nuevos desafíos.`;
-
+      const sug = generarSugerenciaContextual('resumen', d);
+      d.resumen = sug.texto;
       document.getElementById('resumen').value = d.resumen;
       guardar();
-      toast('✨ Resumen mejorado');
+      toast('Resumen adaptado a tu CV');
     }
 
     function iaPulirExperiencias() {
-      const verbos = ['Lideré', 'Optimicé', 'Ejecuté', 'Implementé', 'Coordiné'];
-      (store[actual].experiencias || []).forEach((exp, i) => {
+      const d = store[actual];
+      const ctx = obtenerContextoCV(d);
+      (d.experiencias || []).forEach((exp) => {
         const det = (exp.detalle || '').trim();
-        if (!det) return;
-        const v = verbos[i % verbos.length];
-        if (!/^(lideré|optimicé|ejecuté|implementé|coordiné|realicé|gestioné|desarrollé)/i.test(det)) {
-          exp.detalle = `${v} ${det.charAt(0).toLowerCase() + det.slice(1)}${det.endsWith('.') ? '' : '.'}`;
-        }
+        exp.detalle = det
+          ? `${det.replace(/[.!?]+$/, '')}. ${ctx.rubroDetectado.logro}`
+          : ctx.rubroDetectado.logro;
       });
       guardar(false);
       renderExp();
-      toast('✨ Experiencias pulidas');
+      toast('Logros alineados a tu experiencia');
     }
 
     function iaSugerirSkills() {
-      const cargo = (store[actual].cargo || '').toLowerCase();
-      let sugeridas = ['Comunicación efectiva', 'Trabajo en equipo', 'Resolución de problemas', 'Gestión del tiempo'];
-      if (/soporte|ti|redes|hardware|sistemas|técnico|telemetr/i.test(cargo)) {
-        sugeridas = ['Soporte Técnico', 'Diagnóstico de Hardware', 'Redes y Conectividad', 'Excel', 'Documentación Técnica', 'Resolución de Fallas'];
-      } else if (/ventas|atención|comercial|cliente/i.test(cargo)) {
-        sugeridas = ['Atención al Cliente', 'Negociación', 'Cierre de Ventas', 'CRM / Planillas', 'Comunicación Asertiva'];
-      } else if (/program|desarroll|software|python|web/i.test(cargo)) {
-        sugeridas = ['Git / Control de Versiones', 'Resolución de Bugs', 'Documentación', 'Trabajo Ágil', 'Automatización'];
-      }
-      const actuales = (store[actual].habilidades || '').split(',').map(s => s.trim()).filter(Boolean);
-      const merged = [...new Set([...actuales, ...sugeridas])];
-      store[actual].habilidades = merged.join(', ');
-      document.getElementById('habilidades').value = store[actual].habilidades;
+      const d = store[actual];
+      const sug = generarSugerenciaContextual('skills', d);
+      const actuales = (d.habilidades || '').split(',').map(s => s.trim()).filter(Boolean);
+      const nuevas = sug.texto.split(',').map(s => s.trim()).filter(Boolean);
+      const merged = [...new Set([...actuales, ...nuevas])];
+      d.habilidades = merged.join(', ');
+      document.getElementById('habilidades').value = d.habilidades;
       guardar();
-      toast('✨ Habilidades sugeridas añadidas');
+      toast('Habilidades relacionadas añadidas');
+    }
+
+    function setAiCategory(cat, btn) {
+      aiCategoriaActual = cat;
+      document.querySelectorAll('.ai-pill-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      document.getElementById('aiTopicBadge').textContent = LABELS_IA[cat] || 'IA';
+      generarAyudaIA(false);
+    }
+
+    function generarAyudaIA(notificar = true) {
+      const d = store[actual];
+      const sug = generarSugerenciaContextual(aiCategoriaActual, d);
+      ultimaSugerenciaIA = sug.texto;
+      document.getElementById('aiContextNote').textContent = sug.contexto;
+      document.getElementById('aiSuggestionText').textContent = sug.texto;
+      if (notificar) toast('Sugerencia generada según tu CV');
+    }
+
+    function aplicarSugerenciaPanel() {
+      if (!ultimaSugerenciaIA) generarAyudaIA(false);
+      const d = store[actual];
+
+      if (aiCategoriaActual === 'skills') {
+        const actuales = (d.habilidades || '').split(',').map(s => s.trim()).filter(Boolean);
+        const nuevas = ultimaSugerenciaIA.split(',').map(s => s.trim()).filter(Boolean);
+        d.habilidades = [...new Set([...actuales, ...nuevas])].join(', ');
+        document.getElementById('habilidades').value = d.habilidades;
+        guardar();
+        toast('Habilidades aplicadas al CV');
+      } else if (aiCategoriaActual === 'resumen') {
+        d.resumen = ultimaSugerenciaIA;
+        document.getElementById('resumen').value = d.resumen;
+        guardar();
+        toast('Resumen aplicado al CV');
+      } else if (aiCategoriaActual === 'logros') {
+        if (!d.experiencias || !d.experiencias.length) {
+          d.experiencias = [{ puesto: '', empresa: '', periodo: '', detalle: ultimaSugerenciaIA }];
+        } else {
+          d.experiencias[0].detalle = ultimaSugerenciaIA;
+        }
+        guardar(false);
+        renderExp();
+        toast('Logro aplicado a Experiencia #1');
+      } else if (aiCategoriaActual === 'idiomas') {
+        d.idiomas = ultimaSugerenciaIA;
+        document.getElementById('idiomas').value = d.idiomas;
+        guardar();
+        toast('Idiomas aplicados al CV');
+      } else {
+        copiarSugerenciaPanel();
+      }
+    }
+
+    function copiarSugerenciaPanel() {
+      if (!ultimaSugerenciaIA) return;
+      navigator.clipboard?.writeText(ultimaSugerenciaIA).then(
+        () => toast('Sugerencia copiada'),
+        () => alert(ultimaSugerenciaIA)
+      );
     }
 
     function analizarCV() {
@@ -918,9 +1366,9 @@
       const consejos = [];
 
       if (d.nombre) puntos += 15; else consejos.push('Agrega tu <strong>nombre completo</strong>.');
-      if (d.cargo) puntos += 15; else consejos.push('Define un <strong>cargo o título objetivo</strong> claro.');
-      if (d.telefono && d.correo) puntos += 15; else consejos.push('Completa <strong>teléfono y correo</strong> por separado para facilitar el contacto.');
-      if (d.resumen && d.resumen.length >= 40) puntos += 15; else consejos.push('Amplía tu <strong>resumen profesional</strong> (al menos 40 caracteres) o usa <em>Mejorar con IA</em>.');
+      if (d.cargo) puntos += 15; else consejos.push('Define un <strong>cargo o título objetivo</strong>.');
+      if (d.telefono && d.correo) puntos += 15; else consejos.push('Completa <strong>teléfono y correo</strong> por separado.');
+      if (d.resumen && d.resumen.length >= 35) puntos += 15; else consejos.push('Completa tu <strong>resumen</strong> o usa <em>IA Según CV</em>.');
 
       const expValidas = (d.experiencias || []).filter(e => e.puesto || e.detalle);
       if (expValidas.length >= 1) puntos += 20; else consejos.push('Agrega al menos una <strong>experiencia laboral</strong>.');
@@ -929,10 +1377,10 @@
       if (eduValidas.length >= 1) puntos += 10; else consejos.push('Añade tu <strong>formación o certificación</strong>.');
 
       const skills = (d.habilidades || '').split(',').map(s => s.trim()).filter(Boolean);
-      if (skills.length >= 3) puntos += 10; else consejos.push('Incluye al menos <strong>3 habilidades clave</strong>.');
+      if (skills.length >= 3) puntos += 10; else consejos.push('Incluye al menos <strong>3 habilidades</strong>.');
 
       if (!consejos.length) {
-        consejos.push('¡Excelente! Tu CV tiene todos los bloques clave completos. Revisa la pestaña <strong>Diseño/PDF</strong> y prueba la plantilla <strong>ATS</strong> si postulas a filtros automáticos.');
+        consejos.push('Tu CV tiene los bloques principales completos. Revisa <strong>Diseño/PDF</strong> y prueba la plantilla <strong>ATS</strong> si buscas compatibilidad con filtros automáticos.');
       }
 
       document.getElementById('cvScore').textContent = `Puntaje CV: ${puntos}%`;
@@ -941,25 +1389,20 @@
 
     function copiarPromptIA() {
       const d = store[actual];
-      const prompt = `Actúa como reclutador experto y optimiza este currículum para el cargo "${d.cargo || 'General'}". Devuélvelo claro, con verbos de acción y logros medibles, manteniendo veracidad:\n\n` +
-        `Nombre: ${d.nombre}\nCiudad: ${d.ciudad}\nResumen: ${d.resumen}\nHabilidades: ${d.habilidades}\n` +
-        `Experiencias: ${(d.experiencias || []).map(e => `${e.puesto} en ${e.empresa} (${e.periodo}): ${e.detalle}`).join(' | ')}`;
+      const prompt = `Revisa y mejora este borrador de currículum para el rol "${d.cargo || 'General'}". Mantén veracidad, ordena los logros y sugiere mejoras claras:\n\n` +
+        `Rol objetivo: ${d.cargo}\nResumen: ${d.resumen}\nHabilidades: ${d.habilidades}\n` +
+        `Experiencias: ${(d.experiencias || []).map(e => `${e.puesto} (${e.periodo}): ${e.detalle}`).join(' | ')}`;
 
       navigator.clipboard?.writeText(prompt).then(
-        () => toast('Prompt copiado para pegar en IA'),
+        () => toast('Prompt copiado'),
         () => alert(prompt)
       );
     }
 
-    function renderCV() {
-      const d = store[actual];
-      const doc = document.getElementById('cv-doc');
+    function construirHTMLCV(d) {
       const color = d.color || '#1e3a8a';
-      const colorObj = COLORES.find(c => c.hex === color) || { soft: '#eff6ff' };
-
-      doc.style.setProperty('--cv-color', color);
-      doc.style.setProperty('--cv-color-soft', colorObj.soft);
-      doc.className = d.plantilla || 'tpl-clasica';
+      const soft = calcularColorSuave(color);
+      const tpl = d.plantilla || 'tpl-clasica';
 
       const contacto = [d.telefono, d.correo, d.ciudad, d.web].filter(Boolean).map(esc);
       const skills = (d.habilidades || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -995,8 +1438,9 @@
         ? `<p class="cv-entry-desc">${idiomas.map(esc).join('  •  ')}</p>`
         : '';
 
-      if (d.plantilla === 'tpl-moderna') {
-        doc.innerHTML = `
+      let inner = '';
+      if (tpl === 'tpl-moderna') {
+        inner = `
           <div class="cv-side">
             ${foto}
             <h2>${esc(d.nombre || 'Tu Nombre')}</h2>
@@ -1016,8 +1460,8 @@
             ${eduHtml}
           </div>
         `;
-      } else if (d.plantilla === 'tpl-creativa') {
-        doc.innerHTML = `
+      } else if (tpl === 'tpl-creativa') {
+        inner = `
           <div class="cv-banner">
             <div>
               <h2>${esc(d.nombre || 'Tu Nombre')}</h2>
@@ -1037,7 +1481,7 @@
           ${idiomas.length ? `<h3>Idiomas</h3>${idiomasHtml}` : ''}
         `;
       } else {
-        doc.innerHTML = `
+        inner = `
           <div class="cv-head">
             <div>
               <h2>${esc(d.nombre || 'Tu Nombre')}</h2>
@@ -1057,25 +1501,32 @@
           ${idiomas.length ? `<h3>Idiomas</h3>${idiomasHtml}` : ''}
         `;
       }
+
+      return { tpl, color, soft, inner };
+    }
+
+    function renderCV() {
+      const d = store[actual];
+      const doc = document.getElementById('cv-doc');
+      const data = construirHTMLCV(d);
+      doc.style.setProperty('--cv-color', data.color);
+      doc.style.setProperty('--cv-color-soft', data.soft);
+      doc.className = `cv-sheet ${data.tpl}`;
+      doc.innerHTML = data.inner;
     }
 
     function descargarPDF() {
       irTab(3, document.querySelectorAll('.tab-btn')[3]);
-      const el = document.getElementById('cv-doc');
-      const archivo = (store[actual].nombre || 'curriculum').trim().toLowerCase().replace(/\s+/g, '_') + '.pdf';
-      toast('Generando PDF...');
-      html2pdf().set({
-        margin: 6,
-        filename: archivo,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      }).from(el).save();
+      renderCV();
+      toast('Abriendo vista vertical para guardar PDF...');
+      setTimeout(() => {
+        window.print();
+      }, 150);
     }
 
+    vincularAutocompletadoChrome();
     refrescarPerfiles();
     cargarPerfil();
   </script>
 </body>
 </html>
-
